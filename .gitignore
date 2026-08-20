@@ -1,0 +1,20 @@
+# 密钥 / 敏感文件
+models.json
+auth.json
+
+# 运行时 / 缓存
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.db
+node_modules/
+
+# 系统
+.DS_Store
+Thumbs.db
+*.log
+
+# 编辑器
+.vscode/
+.idea/
+*.swp

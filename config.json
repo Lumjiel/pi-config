@@ -1,0 +1,159 @@
+{
+  "_meta": {
+    "exportedAt": "2026-08-20T19:30:00.000Z",
+    "piVersion": "0.84.2",
+    "scope": "plugins + global skills + MCP servers + custom skills",
+    "platform": "Windows 11 (PowerShell 7 + Git Bash)"
+  },
+  "plugins": {
+    "count": 21,
+    "packages": [
+      "npm:pi-subagents",
+      "npm:pi-mcp-adapter",
+      "npm:pi-web-access",
+      "npm:pi-lens",
+      "npm:context-mode",
+      "npm:pi-hermes-memory",
+      "npm:@juicesharp/rpiv-todo",
+      "npm:pi-marketplace",
+      "npm:@narumitw/pi-github-pr",
+      "npm:@narumitw/pi-plan-mode",
+      "npm:@narumitw/pi-goal",
+      "npm:pi-playwright",
+      "npm:pi-simplify",
+      "npm:@firstpick/pi-prompts-git-pr",
+      "npm:@firstpick/pi-skill-deep-research",
+      "npm:pi-trash",
+      "npm:@99percentpeople/pi-pwsh-adapter",
+      "npm:pi-path-guard",
+      "npm:pi-catppuccin-tui",
+      "npm:pi-hashline-edit-pro"
+    ],
+    "installCommands": [
+      "pi install npm:pi-subagents",
+      "pi install npm:pi-mcp-adapter",
+      "pi install npm:pi-web-access",
+      "pi install npm:pi-lens",
+      "pi install npm:context-mode",
+      "pi install npm:pi-hermes-memory",
+      "pi install npm:@juicesharp/rpiv-todo",
+      "pi install npm:pi-marketplace",
+      "pi install npm:@narumitw/pi-github-pr",
+      "pi install npm:@narumitw/pi-plan-mode",
+      "pi install npm:@narumitw/pi-goal",
+      "pi install npm:pi-playwright",
+      "pi install npm:pi-simplify",
+      "pi install npm:@firstpick/pi-prompts-git-pr",
+      "pi install npm:@firstpick/pi-skill-deep-research",
+      "pi install npm:pi-trash",
+      "pi install npm:@99percentpeople/pi-pwsh-adapter",
+      "pi install npm:pi-path-guard",
+      "pi install npm:pi-catppuccin-tui",
+      "pi install npm:pi-hashline-edit-pro"
+    ]
+  },
+  "globalSkills": {
+    "fromPackages": {
+      "count": 16,
+      "pi-subagents": ["pi-subagents"],
+      "pi-web-access": ["librarian"],
+      "pi-lens": [
+        "pi-lens-ast-grep",
+        "pi-lens-lsp-navigation",
+        "pi-lens-write-ast-grep-rule",
+        "pi-lens-write-tree-sitter-rule"
+      ],
+      "context-mode": [
+        "context-mode",
+        "ctx-search",
+        "ctx-index",
+        "ctx-stats",
+        "ctx-purge",
+        "ctx-insight",
+        "ctx-doctor",
+        "ctx-upgrade"
+      ],
+      "pi-playwright": ["playwright-browser"],
+      "@firstpick/pi-skill-deep-research": ["deep-research"],
+      "pi-catppuccin-tui": ["adapt-ghostty-theme-to-pi"]
+    },
+    "custom": {
+      "count": 7,
+      "skills": [
+        "agently-mail",
+        "bailian-cli",
+        "deepseek-design-discussion",
+        "hf-cli",
+        "review",
+        "skill-creator",
+        "web-access"
+      ]
+    }
+  },
+  "mcpServers": {
+    "count": 1,
+    "config": {
+      "mcpServers": {
+        "context7": {
+          "command": "npx",
+          "args": ["-y", "@upstash/context7-mcp@latest"],
+          "lifecycle": "lazy"
+        }
+      }
+    }
+  },
+  "ui": {
+    "theme": "vivid-night (custom)",
+    "defaultProvider": "longcat",
+    "defaultModel": "LongCat-2.0",
+    "defaultThinkingLevel": "high",
+    "shellPath": "E:\\develop\\Git\\Git\\bin\\bash.exe"
+  },
+  "memory": {
+    "system": "pi-hermes-memory (L2) + context-mode (L3)",
+    "config": {
+      "autoConsolidate": false,
+      "memoryOverflowStrategy": "reject",
+      "reviewEnabled": false,
+      "correctionDetection": true,
+      "failureInjectionEnabled": false
+    },
+    "memoryFiles": {
+      "count": 30,
+      "categories": ["memory", "user", "project", "failure", "lessons", "config"],
+      "topics": [
+        "active-projects", "ai-tools-config", "aliyun-cli-setup",
+        "c-disk-management", "e-disk-management", "environment-config",
+        "failures", "github-account", "lessons", "njgc-grab-optimization",
+        "ollama-benchmarks", "ollama-usage", "openrouter-usage",
+        "package-management-philosophy", "pc-ssh-service",
+        "playwright-mcp-setup", "port-reuse-rule", "process-optimization",
+        "python-environment", "qwen-web-api-reverse", "web-routing",
+        "whiteboard-mindmap", "windows-bat-encoding",
+        "windows-firewall-hardening", "windows-update-lockdown",
+        "windows-update-strategy", "wsl-docker-work-norms"
+      ]
+    }
+  },
+  "tools": {
+    "core": [
+      "bash", "read", "write", "read_symbol", "read_enclosing",
+      "replace", "undo_last_replace",
+      "web_search", "fetch_content", "get_search_content",
+      "todo", "subagent", "subagent_wait", "subagent_supervisor",
+      "skill_manage", "memory_add", "memory_search", "memory_replace",
+      "session_search", "lens_diagnostics", "lsp_diagnostics",
+      "pi_lens_activate_tools", "mcp", "mcpScript"
+    ],
+    "extensions": [
+      "ctx_execute", "ctx_execute_file", "ctx_index", "ctx_search",
+      "ctx_stats", "ctx_purge", "ctx_insight", "ctx_doctor", "ctx_upgrade",
+      "marketplace_search", "marketplace_detail", "marketplace_audit", "marketplace_install",
+      "symbol_search", "module_report", "project_report"
+    ],
+    "activatable": [
+      "ast_grep_search", "ast_grep_replace", "ast_grep_outline", "ast_grep_dump",
+      "lsp_navigation", "lens_diagnostic_mark"
+    ]
+  }
+}
