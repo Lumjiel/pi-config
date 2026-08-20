@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 一键安装我的 Pi 配置：21 个插件 + 1 个 MCP server + 7 个自定义 skill
+# 一键安装我的 Pi 配置：21 个插件 + 1 个 MCP server
 # 不含供应商/模型/key —— 那些请用 `pi config` 自行配置
 #
 # 支持平台：macOS / Linux / Windows (Git Bash / MSYS2)
@@ -61,20 +61,6 @@ else
 fi
 
 echo ""
-echo "📁 安装自定义全局 skills..."
-SKILLS_SRC="$(dirname "$0")/skills-docs"
-SKILLS_DST="$HOME/.pi/agent/skills"
-mkdir -p "$SKILLS_DST"
-
-for skill_dir in "$SKILLS_SRC"/*/; do
-  if [ -d "$skill_dir" ]; then
-    skill_name=$(basename "$skill_dir")
-    cp -r "$skill_dir" "$SKILLS_DST/$skill_name"
-    echo "  ✓ 已安装 skill: $skill_name"
-  fi
-done
-
-echo ""
 echo "✅ 安装完成！"
 echo ""
 if [ "$FAILED" -gt 0 ]; then
@@ -84,5 +70,4 @@ if [ "$FAILED" -gt 0 ]; then
 fi
 echo "📝 下一步（本脚本不做）："
 echo "   1. 用 \`pi config\` 配置你自己的 provider 和 API key"
-echo "   2. 重启 pi 使所有插件/MCP/skill 生效"
-echo "   3. 自定义 skills 已复制到 ~/.pi/agent/skills/"
+echo "   2. 重启 pi 使所有插件/MCP 生效"

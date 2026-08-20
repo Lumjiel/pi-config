@@ -2,8 +2,7 @@
   "_meta": {
     "exportedAt": "2026-08-20T19:30:00.000Z",
     "piVersion": "0.84.2",
-    "scope": "plugins + global skills + MCP servers + custom skills",
-    "platform": "Windows 11 (PowerShell 7 + Git Bash)"
+"scope": "plugins + global skills + MCP servers"
   },
   "plugins": {
     "count": 21,
@@ -53,8 +52,8 @@
     ]
   },
   "globalSkills": {
-    "fromPackages": {
-      "count": 16,
+"fromPackages": {
+      "count": 16
       "pi-subagents": ["pi-subagents"],
       "pi-web-access": ["librarian"],
       "pi-lens": [
@@ -76,18 +75,6 @@
       "pi-playwright": ["playwright-browser"],
       "@firstpick/pi-skill-deep-research": ["deep-research"],
       "pi-catppuccin-tui": ["adapt-ghostty-theme-to-pi"]
-    },
-    "custom": {
-      "count": 7,
-      "skills": [
-        "agently-mail",
-        "bailian-cli",
-        "deepseek-design-discussion",
-        "hf-cli",
-        "review",
-        "skill-creator",
-        "web-access"
-      ]
     }
   },
   "mcpServers": {
@@ -136,24 +123,12 @@
     }
   },
   "tools": {
-    "core": [
-      "bash", "read", "write", "read_symbol", "read_enclosing",
-      "replace", "undo_last_replace",
-      "web_search", "fetch_content", "get_search_content",
-      "todo", "subagent", "subagent_wait", "subagent_supervisor",
-      "skill_manage", "memory_add", "memory_search", "memory_replace",
-      "session_search", "lens_diagnostics", "lsp_diagnostics",
-      "pi_lens_activate_tools", "mcp", "mcpScript"
-    ],
-    "extensions": [
-      "ctx_execute", "ctx_execute_file", "ctx_index", "ctx_search",
-      "ctx_stats", "ctx_purge", "ctx_insight", "ctx_doctor", "ctx_upgrade",
-      "marketplace_search", "marketplace_detail", "marketplace_audit", "marketplace_install",
-      "symbol_search", "module_report", "project_report"
-    ],
-    "activatable": [
-      "ast_grep_search", "ast_grep_replace", "ast_grep_outline", "ast_grep_dump",
-      "lsp_navigation", "lens_diagnostic_mark"
-    ]
+"contextMode": {
+      "core": ["ctx_execute", "ctx_execute_file"],
+      "knowledgeBase": ["ctx_index", "ctx_search"],
+      "web": ["ctx_fetch_and_index"],
+      "batch": ["ctx_batch_execute"],
+      "management": ["ctx_stats", "ctx_purge", "ctx_insight", "ctx_doctor", "ctx_upgrade"]
+    }
   }
 }

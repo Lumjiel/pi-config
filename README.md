@@ -3,13 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-success)](LICENSE)
 [![Pi](https://img.shields.io/badge/Pi-0.84.2-8A2BE2)](https://pi.dev)
 [![Plugins](https://img.shields.io/badge/plugins-21-blue)](#六插件目录21个按用途分组)
-[![Skills](https://img.shields.io/badge/skills-23-green)](#七全局-skill-清单23个)
 [![MCP](https://img.shields.io/badge/MCP-1-orange)](#八mcp-server1个)
 [![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20PowerShell%20%7C%20Git%20Bash-lightgrey)](#五快速上手3步)
 [![Memory](https://img.shields.io/badge/memory-30%20files-ff69b4)](#九记忆系统两层的)
 
-一份可直接复刻的 [Pi](https://pi.dev) 配置，整理成教程形式分享。包含 **21 个插件、23 个全局 Skill（16 来自包 + 7 自定义）、1 个 MCP server、双层记忆系统**，配一键安装脚本。
-
+一份可直接复刻的 [Pi](https://pi.dev) 配置，整理成教程形式分享。包含 **21 个插件、16 个全局 Skill、1 个 MCP server、双层记忆系统**，配一键安装脚本。
 仓库里的每样东西都经过实际使用筛选，目标是把 Pi 打造成一个能多代理协作、能省 token、能跑浏览器、能操作邮件、有长期记忆的全能终端编码代理。
 
 ---
@@ -104,8 +102,7 @@ Pi 提供了从轻到重三档改造方式：
 
 ### 轻量：写一个 Skill
 
-最简单的扩展。在 `~/.pi/agent/skills/my-skill/SKILL.md` 写一个 markdown，描述某类任务的标准流程。模型会按需加载它。本仓库的 7 个自定义 skill 就是这种形式。
-
+最简单的扩展。在 `~/.pi/agent/skills/my-skill/SKILL.md` 写一个 markdown，描述某类任务的标准流程。模型会按需加载它。
 适合：沉淀「怎么发邮件」「怎么做代码审查」「怎么操作 HuggingFace」这类流程知识，零代码。
 
 ### 中量：装 / 写 MCP Server
@@ -129,14 +126,13 @@ MCP（Model Context Protocol）是跨 agent 的工具协议。写一个 MCP serv
 git clone https://github.com/Lumjiel/pi-config.git
 cd pi-config
 
-# 2. 一键安装（装 21 个插件 + 合并 MCP + 复制自定义 skills）
+# 2. 一键安装（装 21 个插件 + 合并 MCP 配置）
 bash install.sh
 
 # 3. 重启 pi，让所有插件和 MCP server 生效
 ```
 
-脚本会自动把 21 个插件用 `pi install` 装好，把 MCP server 的配置合并进 `~/.config/mcp/mcp.json`，并把 7 个自定义 skill 复制到 `~/.pi/agent/skills/`。
-
+脚本会自动把 21 个插件用 `pi install` 装好，并把 MCP server 的配置合并进 `~/.config/mcp/mcp.json`。
 > 安装完之后，模型的 provider / key 还需要你自己用 `pi config` 配一下——这部分因人而异，不在本仓库范围内。
 
 ---
@@ -175,8 +171,14 @@ Pi 的「IDE 眼睛」。AST 级别的代码理解能力：ast-grep 结构化搜
 
 省 token 的核心插件。把大输出路由进沙箱，用代码处理，只把摘要返回给模型。内置 FTS5 全文检索知识库。效果：分析 47 个源文件，直接 read 要烧 ~700KB；走 context-mode 只回 ~3.6KB。配套 8 个 skill。
 
-- 📦 仓库：<https://github.com/mksglu/context-mode>
+工具层级：
+- **核心工具**：`ctx_execute` / `ctx_execute_file` — 大输出分析的首选
+- **知识库**：`ctx_index` / `ctx_search` — 索引文档后按需检索
+- **Web 索引**：`ctx_fetch_and_index` — 抓取 URL 并索引
+- **批量执行**：`ctx_batch_execute` — 多命令并行
+- **管理工具**：`ctx_stats` / `ctx_purge` / `ctx_insight` / `ctx_doctor` / `ctx_upgrade`
 
+- 📦 仓库：<https://github.com/mksglu/context-mode>
 #### `pi-hermes-memory`
 
 跨会话记忆。让 Pi 记住你之前告诉过它的事（偏好、项目约定、踩过的坑），下次开新会话还能用上。记忆分 user / memory / project / failure 四类，可搜索。
@@ -275,9 +277,9 @@ Catppuccin 配色方案集合。一套和谐的暖色调主题，护眼看久了
 
 ---
 
-## 七、全局 Skill 清单（23 个）
+## 七、全局 Skill 清单（16 个）
 
-### 来自包（16 个）
+所有 skill 都来自已安装的 npm 包，装好插件即自动获得。
 
 | 类别 | Skill | 来源包 |
 | --- | --- | --- |
@@ -286,19 +288,6 @@ Catppuccin 配色方案集合。一套和谐的暖色调主题，护眼看久了
 | 浏览器 | `playwright-browser` | pi-playwright |
 | 上下文/知识库 | `context-mode`、`ctx-search`、`ctx-index`、`ctx-stats`、`ctx-purge`、`ctx-insight`、`ctx-doctor`、`ctx-upgrade` | context-mode |
 | 代码智能 | `pi-lens-ast-grep`、`pi-lens-lsp-navigation`、`pi-lens-write-ast-grep-rule`、`pi-lens-write-tree-sitter-rule` | pi-lens |
-
-### 自定义（7 个）
-
-| Skill | 用途 | 触发场景 |
-| --- | --- | --- |
-| `agently-mail` | 邮件操作（发送/回复/转发/搜索/读取/附件） | 用户要求操作邮件 |
-| `bailian-cli` | 阿里云 Model Studio CLI (`bl`) — 多模态/图生图/视频/TTS/RAG | 任何 AI 任务优先用 `bl` |
-| `deepseek-design-discussion` | 和 DeepSeek 多轮讨论项目设计 | "讨论方案"/"讨论设计" |
-| `hf-cli` | HuggingFace Hub CLI (`hf`) — 模型/数据集/空间管理 | 提到 hf/huggingface |
-| `review` | 结构化代码审查（5 条原则 + 强制举证） | "审查"/"review"/"帮我看看" |
-| `skill-creator` | 创建/改进/评估 Skill | 用户想写新 skill |
-| `web-access` | 联网操作（搜索/抓取/登录后操作/动态渲染页面） | 任何需要浏览器的任务 |
-
 ---
 
 ## 八、MCP Server（1 个）
@@ -371,12 +360,10 @@ Upstash 的 Context7 MCP。给模型实时拉取第三方库的**最新文档**�
 
 | 文件 | 说明 |
 | --- | --- |
-| `install.sh` | 一键安装脚本：装 21 个插件 + 合并 MCP + 复制 7 个自定义 skill |
+| `install.sh` | 一键安装脚本：装 21 个插件 + 合并 MCP 配置 |
 | `config.json` | 机器可读的完整配置（plugins / skills / MCP / UI / tools / memory） |
 | `mcp.json` | MCP server 配置 |
-| `skills-docs/` | 7 个自定义 skill 的 SKILL.md 源文件 |
 | `README.md` | 本文件 |
-
 ---
 
 ## 十二、装完之后怎么用
@@ -385,7 +372,6 @@ Upstash 的 Context7 MCP。给模型实时拉取第三方库的**最新文档**�
 2. **重启 Pi**：让新装的插件和 MCP server 生效。
 3. **试试 skill**：在 Pi 里直接描述任务，模型会自动匹配合适的 skill。
 4. **双层记忆**：L2 自动生效；L3 需要时用 `ctx_index` 索引文档。
-5. **自定义 skill**：已复制到 `~/.pi/agent/skills/`，直接可用。
 
 ---
 
