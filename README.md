@@ -1,285 +1,149 @@
-# 我的 Pi Coding Agent 配置
+# pi-config
+
+开箱即用的 [Pi](https://pi.dev) 终端编码代理配置 —— **21 个插件 · 16 个 Skill · 1 个 MCP Server · 双层记忆系统**，一条命令完整复刻。
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-success)](LICENSE)
 [![Pi](https://img.shields.io/badge/Pi-0.84.2-8A2BE2)](https://pi.dev)
-[![Plugins](https://img.shields.io/badge/plugins-21-blue)](#六插件目录21个按用途分组)
-[![MCP](https://img.shields.io/badge/MCP-1-orange)](#八mcp-server1个)
-[![Platform](https://img.shields.io/badge/platform-Windows%2011%20%7C%20PowerShell%20%7C%20Git%20Bash-lightgrey)](#五快速上手3步)
-[![Memory](https://img.shields.io/badge/memory-30%20files-ff69b4)](#九记忆系统两层的)
+[![Plugins](https://img.shields.io/badge/plugins-21-blue)](#-插件目录21-个)
+[![Skills](https://img.shields.io/badge/skills-16-green)](#-skill-清单16-个)
+[![MCP](https://img.shields.io/badge/MCP-1-orange)](#-mcp-integration)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#-compatibility)
 
-一份可直接复刻的 [Pi](https://pi.dev) 配置，整理成教程形式分享。包含 **21 个插件、16 个全局 Skill、1 个 MCP server、双层记忆系统**，配一键安装脚本。
-仓库里的每样东西都经过实际使用筛选，目标是把 Pi 打造成一个能多代理协作、能省 token、能跑浏览器、能操作邮件、有长期记忆的全能终端编码代理。
+仓库里的每一样东西都经过实际使用筛选，目标是把 Pi 打造成一个**能多代理协作、能省 token、能跑浏览器、有长期记忆**的全能终端编码代理。
+
+**导航**：[Compatibility](#-compatibility) · [Quick Start](#-quick-start) · [插件目录](#-插件目录21-个) · [Skill 清单](#-skill-清单16-个) · [MCP](#-mcp-integration) · [记忆系统](#-双层记忆系统) · [配置文件](#️-配置文件速查) · [Limitations](#️-limitations)
 
 ---
 
-## 一、Pi 是什么？
+## 😡 The Problem
 
-[Pi](https://pi.dev)（npm 包 `@earendil-works/pi-coding-agent`）是一个开源的终端 AI 编码代理。你给它一个任务，它在你本地的项目里读写文件、跑命令、调用工具来完成任务。
+裸装一个 AI 编码代理，第一天很兴奋，第三天就露馅：
 
-如果你还没装 Pi，先：
+> **You**：帮我重构这个模块，顺便按我上次的偏好来
+> **Pi**：我没有浏览器工具查不了文档，也记不住你上次的偏好——每次新会话我都从零开始。
+> **You**：……那我要你这"代理"干嘛？
+
+痛点拆开就是四件事：**没有工具生态、token 烧得快、没有跨会话记忆、Windows 下体验割裂**。这个仓库一次性解决。
+
+---
+
+## ✅ The Solution
+
+一条命令装好整套生态：
 
 ```bash
-npm install -g @earendil-works/pi-coding-agent
+bash install.sh
 ```
 
-然后跑 `pi` 进入交互界面。本仓库的所有插件都假设你已经有一个能正常工作的 Pi。
+```
+📦 安装 21 个 Pi 插件包...
+  → pi install npm:pi-subagents        ✓
+  → pi install npm:context-mode        ✓
+  ...共 21 个
+🔌 配置 MCP servers...
+  ✓ 已合并 MCP server: context7       （已有配置不覆盖）
+✅ 安装完成！
+```
+
+装完即得：子代理编排 + AST 级代码理解 + 大输出沙箱省 token + Playwright 浏览器 + FTS5 双层记忆。
 
 ---
 
-## 二、Pi 的整体架构
+## 📊 Compatibility
 
-理解架构有助于你挑选和编写插件。Pi 是一个**插件驱动的代理循环**，核心分层：
-
-```
-┌─────────────────────────────────────────────────────┐
-│  TUI / RPC / Print   ← 用户交互层（终端界面 / API）  │
-├─────────────────────────────────────────────────────┤
-│  Agent Loop          ← 代理循环：收 prompt → 调模型  │
-│                         → 执行工具 → 回传结果         │
-├─────────────────────────────────────────────────────┤
-│  Providers / Models  ← 多模型抽象：OpenAI / Anthropic │
-│                         / 本地 / 自定义 provider      │
-├─────────────────────────────────────────────────────┤
-│  Tools               ← 模型可调用的工具：bash/read/   │
-│                         edit/web_search/mcp/自定义    │
-├─────────────────────────────────────────────────────┤
-│  Extensions          ← TypeScript 模块，能订阅事件、  │
-│                         注册工具/命令/快捷键/主题      │
-├─────────────────────────────────────────────────────┤
-│  Skills / Prompts    ← Markdown 形式的「过程知识」，  │
-│                         按需注入到模型上下文           │
-├─────────────────────────────────────────────────────┤
-│  Themes              ← JSON 配色方案                  │
-├─────────────────────────────────────────────────────┤
-│  Packages            ← 上面这些资源的分发单位          │
-│                         （npm / git / 本地路径）       │
-└─────────────────────────────────────────────────────┘
-```
-
-**关键概念：**
-
-- **Extension（扩展）**：TypeScript 模块，最强力的改造方式。能订阅生命周期事件、注册自定义工具、注册命令、改系统提示词、自定义渲染。
-- **Skill（技能）**：一个 `SKILL.md` 文件，描述「某类任务怎么做」。模型按需加载，跨会话存活。
-- **Theme（主题）**：JSON 配色方案。本仓库包含一个自定义主题 `vivid-night`。
-- **Package（包）**：把上面这些打包，通过 npm / git / 本地路径分发。`pi install` 就是装包。
-
----
-
-## 三、Pi 的生态与包市场
-
-### 包市场（pi.dev/packages）
-
-Pi 有一个官方的 [包市场](https://pi.dev/packages)，所有在 `package.json` 里带 `pi-package` 关键字的 npm 包都会自动出现在上面。
-
-```bash
-pi install npm:@some/package
-```
-
-### 三种包来源
-
-| 来源 | 格式 | 说明 |
+| 环境 | 状态 | 说明 |
 | --- | --- | --- |
-| npm | `npm:@scope/pkg@1.2.3` | 最常见，版本可 pin |
-| git | `git:github.com/user/repo@v1` | 适合私有 / 未发布的包 |
-| 本地路径 | `/abs/path` 或 `./rel/path` | 开发调试用 |
-
-### 配置文件位置
-
-| 文件 | 作用 |
-| --- | --- |
-| `~/.pi/agent/settings.json` | 全局设置：packages 列表、主题、默认模型等 |
-| `~/.pi/agent/models.json` | provider 和模型定义 |
-| `~/.pi/agent/extensions/*.ts` | 全局自定义扩展 |
-| `~/.pi/agent/skills/` | 全局自定义 skill |
-| `~/.config/mcp/mcp.json` | MCP server 配置 |
-| `.pi/settings.json` | 项目级设置（可跟团队共享） |
+| Windows 11 + PowerShell 7 | ✅ 作者日常环境 | 含 pwsh-adapter / path-guard 适配 |
+| macOS / Linux | ✅ 支持 | `install.sh` 原生支持 |
+| Git Bash / MSYS2 | ✅ 支持 | Windows 备选方案 |
+| 模型 Provider / API Key | ⚠️ 需自配 | 用 `pi config` 配置，因人而异不入库 |
+| Pi 版本 | 0.84.2 | 其他版本未测试 |
 
 ---
 
-## 四、如何改造 / 扩展 Pi
+## 🚀 Quick Start
 
-Pi 提供了从轻到重三档改造方式：
-
-### 轻量：写一个 Skill
-
-最简单的扩展。在 `~/.pi/agent/skills/my-skill/SKILL.md` 写一个 markdown，描述某类任务的标准流程。模型会按需加载它。
-适合：沉淀「怎么发邮件」「怎么做代码审查」「怎么操作 HuggingFace」这类流程知识，零代码。
-
-### 中量：装 / 写 MCP Server
-
-MCP（Model Context Protocol）是跨 agent 的工具协议。写一个 MCP server，在 `~/.config/mcp/mcp.json` 注册，Pi 通过 `pi-mcp-adapter` 把它的工具接进来。
-
-适合：接入外部服务（数据库、API、浏览器、文档源），工具跨 agent 复用。
-
-### 重量：写一个 Extension
-
-最强力的改造。创建 `~/.pi/agent/extensions/my-ext.ts`，订阅事件、注册工具、拦截调用。
-
-适合：权限门禁、git checkpoint、自定义 compaction、外部集成、有状态工具。
-
----
-
-## 五、快速上手（3 步）
+### 30 秒版（已装 Pi）
 
 ```bash
+git clone https://github.com/Lumjiel/pi-config.git && cd pi-config && bash install.sh
+# 重启 pi 即生效
+```
+
+### 分步版
+
+```bash
+# 0. 还没装 Pi？先装本体
+npm install -g @earendil-works/pi-coding-agent
+
 # 1. 克隆本仓库
 git clone https://github.com/Lumjiel/pi-config.git
 cd pi-config
 
-# 2. 一键安装（装 21 个插件 + 合并 MCP 配置）
+# 2. 一键安装：21 个插件 + 合并 MCP 配置
 bash install.sh
 
-# 3. 重启 pi，让所有插件和 MCP server 生效
-```
+# 3. 配置你自己的模型 provider 和 key（脚本不做这步）
+pi config
 
-脚本会自动把 21 个插件用 `pi install` 装好，并把 MCP server 的配置合并进 `~/.config/mcp/mcp.json`。
-> 安装完之后，模型的 provider / key 还需要你自己用 `pi config` 配一下——这部分因人而异，不在本仓库范围内。
+# 4. 重启 pi，让所有插件和 MCP server 生效
+```
 
 ---
 
-## 六、插件目录（21 个，按用途分组）
+## 🧩 插件目录（21 个）
 
 ### 🤖 代理编排与工作流
 
-#### `pi-subagents`
-
-子代理委派框架。让主代理可以把任务派给子代理，支持五种工作模式：single / chain / parallel / async / forked-context。适合做「先让一个代理研究、再让另一个代理实现、最后让第三个代理 review」这种复杂流程。
-
-- 📦 仓库：<https://github.com/nicobailon/pi-subagents>
-
-#### `@narumitw/pi-goal`
-
-目标驱动模式。用 `/goal` 设一个目标，Pi 会自主推进直到完成，中途遇到阻塞会主动停下来等你。适合长任务。
-
-- 📦 仓库：<https://github.com/narumiruna/pi-extensions>
-
-#### `@narumitw/pi-plan-mode`
-
-只读的计划模式。让模型先出方案、跟你讨论清楚，再进入执行。避免一上来就乱改文件。
-
-- 📦 仓库：<https://github.com/narumiruna/pi-extensions>
+| 插件 | 作用 | 仓库 |
+| --- | --- | --- |
+| `pi-subagents` | 子代理委派框架，single / chain / parallel / async / forked 五种模式 | [nicobailon/pi-subagents](https://github.com/nicobailon/pi-subagents) |
+| `@narumitw/pi-goal` | `/goal` 目标驱动，自主推进长任务，遇阻塞主动停下 | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `@narumitw/pi-plan-mode` | 只读计划模式，先出方案讨论清楚再动手 | 同上 |
+| `@narumitw/pi-github-pr` | 终端里看 PR review / checks / comment | 同上 |
+| `@juicesharp/rpiv-todo` | 实时浮层 todo list，扛得住 `/reload` 和上下文压缩 | [juicesharp/rpiv-mono](https://github.com/juicesharp/rpiv-mono) |
 
 ### 🔍 代码智能与上下文管理
 
-#### `pi-lens`
+| 插件 | 作用 | 仓库 |
+| --- | --- | --- |
+| `pi-lens` | AST 级代码理解：ast-grep 结构化搜索替换、tree-sitter 检查、LSP 诊断 | [apmantza/pi-lens](https://github.com/apmantza/pi-lens) |
+| `context-mode` | 省 token 核心：大输出路由进沙箱处理只回摘要，内置 FTS5 知识库 | [mksglu/context-mode](https://github.com/mksglu/context-mode) |
 
-Pi 的「IDE 眼睛」。AST 级别的代码理解能力：ast-grep 结构化搜索/替换、tree-sitter 语法规则检查、LSP 诊断、符号搜索、模块报告。配套 4 个 skill。
-
-- 📦 仓库：<https://github.com/apmantza/pi-lens>
-
-#### `context-mode`
-
-省 token 的核心插件。把大输出路由进沙箱，用代码处理，只把摘要返回给模型。内置 FTS5 全文检索知识库。效果：分析 47 个源文件，直接 read 要烧 ~700KB；走 context-mode 只回 ~3.6KB。配套 8 个 skill。
-
-工具层级：
-- **核心工具**：`ctx_execute` / `ctx_execute_file` — 大输出分析的首选
-- **知识库**：`ctx_index` / `ctx_search` — 索引文档后按需检索
-- **Web 索引**：`ctx_fetch_and_index` — 抓取 URL 并索引
-- **批量执行**：`ctx_batch_execute` — 多命令并行
-- **管理工具**：`ctx_stats` / `ctx_purge` / `ctx_insight` / `ctx_doctor` / `ctx_upgrade`
-
-- 📦 仓库：<https://github.com/mksglu/context-mode>
-#### `pi-hermes-memory`
-
-跨会话记忆。让 Pi 记住你之前告诉过它的事（偏好、项目约定、踩过的坑），下次开新会话还能用上。记忆分 user / memory / project / failure 四类，可搜索。
-
-- 📦 仓库：<https://github.com/chandra447/pi-hermes-memory>
+> context-mode 效果实测：分析 47 个源文件，直接 read 要烧 ~700KB，走它只回 ~3.6KB。
 
 ### 🌐 浏览、检索与外部接入
 
-#### `pi-web-access`
+| 插件 | 作用 | 仓库 |
+| --- | --- | --- |
+| `pi-web-access` | Web 全家桶：6 引擎搜索、URL 转 markdown、YouTube 转录、PDF 提取 | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
+| `pi-playwright` | 浏览器自动化：开页面、填表单、点击、截图、看 console/network | [guwidoe/pi-playwright](https://github.com/guwidoe/pi-playwright) |
+| `pi-mcp-adapter` | 接入任意 MCP server，支持 OAuth、安全审查、懒启动 | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
+| `pi-marketplace` | 在 Pi 里直接搜索、审计、安装 npm 上的 pi 包 | [pi.dev/packages](https://pi.dev/packages/pi-marketplace) |
 
-Web 访问全家桶：多引擎网页搜索（OpenAI / Brave / Exa / Tavily / Perplexity / Gemini）、URL 内容转 markdown、YouTube 转录、GitHub 仓库克隆、PDF 提取。配带 `librarian` skill。
+### 🪟 Windows / PowerShell 适配
 
-- 📦 仓库：<https://github.com/nicobailon/pi-web-access>
-
-#### `pi-playwright`
-
-Playwright 浏览器自动化。让 Pi 能开浏览器、填表单、点按钮、截图、查 console/network。配带 `playwright-browser` skill。
-
-- 📦 仓库：<https://github.com/guwidoe/pi-playwright>
-
-#### `pi-mcp-adapter`
-
-MCP 适配器。让 Pi 能连接任何 MCP server，支持 OAuth、安全审查、按需懒启动。
-
-- 📦 仓库：<https://github.com/nicobailon/pi-mcp-adapter>
-
-#### `pi-marketplace`
-
-Pi 包市场入口。在 Pi 里直接搜索、查看详情、安全审计、安装 npm 上的 pi 包。
-
-- 📦 仓库：<https://pi.dev/packages/pi-marketplace>
-
-### 🖥️ Windows / PowerShell 适配
-
-#### `@99percentpeople/pi-pwsh-adapter`
-
-PowerShell 7 适配器。让 Pi 在 Windows 上用原生 PowerShell 跑命令，而不是默认的 cmd.exe。对 Windows 用户是必装。
-
-- 📦 仓库：<https://github.com/99percentpeople/pi-pwsh-adapter>
-
-#### `pi-path-guard`
-
-路径守卫。防止 Pi 在 Windows 上意外写入系统目录或越界操作。
-
-- 📦 仓库：<https://github.com/nicobailon/pi-path-guard>
+| 插件 | 作用 | 仓库 |
+| --- | --- | --- |
+| `@99percentpeople/pi-pwsh-adapter` | 让 Pi 用原生 PowerShell 7 跑命令而非 cmd.exe，Windows 必装 | [99percentpeople/pi-pwsh-adapter](https://github.com/99percentpeople/pi-pwsh-adapter) |
+| `pi-path-guard` | 防 Pi 意外写入系统目录或越界操作 | [nicobailon/pi-path-guard](https://github.com/nicobailon/pi-path-guard) |
 
 ### ✨ 实用工具与主题
 
-#### `@juicesharp/rpiv-todo`
-
-给模型的 todo list，渲染成实时浮层，扛得住 `/reload` 和会话压缩。多步骤任务进度可视化。
-
-- 📦 仓库：<https://github.com/juicesharp/rpiv-mono>
-
-#### `@narumitw/pi-github-pr`
-
-在 Pi 里看 GitHub PR 的 review / checks / comment 状态，不用切浏览器。
-
-- 📦 仓库：<https://github.com/narumiruna/pi-extensions>
-
-#### `pi-simplify`
-
-审最近改动的代码，从清晰度、一致性、可维护性角度给建议。改完代码跑一下，把烂味道扫干净。
-
-- 📦 仓库：<https://github.com/MattDevy/pi-extensions>
-
-#### `@firstpick/pi-prompts-git-pr`
-
-一套可复用的 prompt 模板：提交信息、PR 描述、PR review 流程。直接 `/` 唤起对应模板。
-
-- 📦 仓库：<https://github.com/Firstp1ck/pi-coding-agent-forge>
-
-#### `@firstpick/pi-skill-deep-research`
-
-带 `deep-research` skill：两阶段严谨研究流程，带 schema / policy 校验。适合需要多源证据的高 stakes 研究。
-
-- 📦 仓库：<https://github.com/Firstp1ck/pi-coding-agent-forge>
-
-#### `pi-trash`
-
-安全删除。把 `rm` 替换成移到回收站，防止误删不可恢复的文件。
-
-- 📦 仓库：<https://github.com/nicobailon/pi-trash>
-
-#### `pi-catppuccin-tui`
-
-Catppuccin 配色方案集合。一套和谐的暖色调主题，护眼看久了不累。
-
-- 📦 仓库：<https://github.com/nicobailon/pi-catppuccin-tui>
-
-#### `pi-hashline-edit-pro`
-
-行级哈希锚点编辑增强。让 Pi 的 `replace` 工具在大文件里更精准地定位和替换代码块。
-
-- 📦 仓库：<https://github.com/nicobailon/pi-hashline-edit-pro>
+| 插件 | 作用 | 仓库 |
+| --- | --- | --- |
+| `pi-simplify` | 审最近改动代码的清晰度 / 一致性 / 可维护性 | [MattDevy/pi-extensions](https://github.com/MattDevy/pi-extensions) |
+| `@firstpick/pi-prompts-git-pr` | prompt 模板集：提交信息、PR 描述、review 流程，`/` 直接唤起 | [Firstp1ck/pi-coding-agent-forge](https://github.com/Firstp1ck/pi-coding-agent-forge) |
+| `@firstpick/pi-skill-deep-research` | 两阶段深度研究流程，带 schema / policy 校验 | 同上 |
+| `pi-trash` | 安全删除：`rm` 改为移入回收站，防误删不可恢复 | [nicobailon/pi-trash](https://github.com/nicobailon/pi-trash) |
+| `pi-catppuccin-tui` | Catppuccin 暖色调主题集合 | [nicobailon/pi-catppuccin-tui](https://github.com/nicobailon/pi-catppuccin-tui) |
+| `pi-hashline-edit-pro` | 行级哈希锚点编辑增强，大文件精准替换 | [nicobailon/pi-hashline-edit-pro](https://github.com/nicobailon/pi-hashline-edit-pro) |
 
 ---
 
-## 七、全局 Skill 清单（16 个）
+## 🦞 Skill 清单（16 个）
 
-所有 skill 都来自已安装的 npm 包，装好插件即自动获得。
+全部来自已安装的 npm 包，装好插件自动获得：
 
 | 类别 | Skill | 来源包 |
 | --- | --- | --- |
@@ -288,15 +152,14 @@ Catppuccin 配色方案集合。一套和谐的暖色调主题，护眼看久了
 | 浏览器 | `playwright-browser` | pi-playwright |
 | 上下文/知识库 | `context-mode`、`ctx-search`、`ctx-index`、`ctx-stats`、`ctx-purge`、`ctx-insight`、`ctx-doctor`、`ctx-upgrade` | context-mode |
 | 代码智能 | `pi-lens-ast-grep`、`pi-lens-lsp-navigation`、`pi-lens-write-ast-grep-rule`、`pi-lens-write-tree-sitter-rule` | pi-lens |
+
 ---
 
-## 八、MCP Server（1 个）
+## 🤖 MCP Integration
 
-配置在 `mcp.json`，安装脚本会合并到 `~/.config/mcp/mcp.json`。
+唯一的 MCP server 是 Upstash 的 [Context7](https://github.com/upstash/context7)：给模型实时拉取第三方库**最新文档**，避免用过时的训练知识写代码。
 
-### `context7`
-
-Upstash 的 Context7 MCP。给模型实时拉取第三方库的**最新文档**，避免它用过时的训练知识写代码。
+配置在 [`mcp.json`](mcp.json)，安装脚本自动合并进 `~/.config/mcp/mcp.json`（不覆盖已有 server）：
 
 ```json
 {
@@ -306,22 +169,18 @@ Upstash 的 Context7 MCP。给模型实时拉取第三方库的**最新文档**�
 }
 ```
 
-设了 `"lifecycle": "lazy"`——按需启动，不常驻，省资源。
+`"lifecycle": "lazy"` —— 按需启动，不常驻，省资源。
 
 ---
 
-## 九、记忆系统（两层）
+## 🧠 双层记忆系统
 
-本仓库实现了**双层记忆架构**，让 Pi 既有快速检索的精华知识，又有海量的文档沉淀。
+| 层 | 实现 | 定位 | 存储 |
+| --- | --- | --- | --- |
+| L2 精华记忆 | pi-hermes-memory | 跨会话持久化的决策/偏好/教训，FTS5 全文检索 | `~/.pi/agent/pi-hermes-memory/` |
+| L3 知识库 | context-mode | 大文档/手册索引，原文不进上下文只回匹配窗口 | `ctx_index` / `ctx_search` 管理 |
 
-### L2：pi-hermes-memory（精华记忆）
-
-跨会话持久化记忆，存储在 `~/.pi/agent/pi-hermes-memory/`。
-
-- **30 个 .md 文件**，覆盖：环境配置、教训、偏好、项目约定、Windows 运维、网络路由等
-- 分四类 target：`memory`（全局）、`user`（用户画像）、`project`（项目级）、`failure`（失败教训）
-- 基于 SQLite FTS5 全文检索
-- 配置：`autoConsolidate: false`、`correctionDetection: true`
+L2 共 **30 个 .md 文件**，分四类 target：`memory`（全局）、`user`（用户画像）、`project`（项目级）、`failure`（失败教训）。
 
 关键文件：
 
@@ -329,52 +188,55 @@ Upstash 的 Context7 MCP。给模型实时拉取第三方库的**最新文档**�
 | --- | --- |
 | `MEMORY.md` | 全局精华：工具链、环境、关键决策 |
 | `USER.md` | 用户画像：偏好、沟通风格、工作习惯 |
-| `SYSTEM.md` | 系统环境：OS、Shell、已装工具 |
 | `failures.md` | 失败教训：踩过的坑和修复方法 |
-| `lessons.md` | 通用经验：跨项目可复用的操作技巧 |
-| `environment-config.md` | 开发环境详细配置参考 |
-| `python-environment.md` | Python 环境管理方案 |
-| `web-routing.md` | 网络代理和路由规则 |
-| `windows-*.md` | Windows 运维系列（防火墙/更新/Bat编码等） |
+| `lessons.md` | 跨项目可复用的操作技巧 |
+| `windows-*.md` | Windows 运维系列（防火墙/更新/Bat 编码等） |
 
-### L3：context-mode（知识库）
-
-大文档和过程数据的索引层。
-
-- 用 `ctx_index` 索引文档/网页/手册
-- 用 `ctx_search` 按需检索
-- 原始内容不进对话上下文，只回匹配的窗口
-- 适合：大型 API 文档、框架源码分析、历史会话检索
+配置项：`autoConsolidate: false`（手动固化）、`correctionDetection: true`(自动识别纠错)。
 
 ---
 
-## 十、自定义主题
+## ⚙️ 配置文件速查
 
-### `vivid-night`
-
-自定义暗色主题，存放在 `pi-agent/themes/vivid-night.json`。安装后 Pi 会自动加载。
-
----
-
-## 十一、仓库内容
-
-| 文件 | 说明 |
+| 文件 | 作用 |
 | --- | --- |
-| `install.sh` | 一键安装脚本：装 21 个插件 + 合并 MCP 配置 |
-| `config.json` | 机器可读的完整配置（plugins / skills / MCP / UI / tools / memory） |
-| `mcp.json` | MCP server 配置 |
-| `README.md` | 本文件 |
----
+| `~/.pi/agent/settings.json` | 全局设置：packages 列表、主题、默认模型 |
+| `~/.pi/agent/models.json` | provider 和模型定义 |
+| `~/.pi/agent/skills/` | 全局自定义 skill |
+| `~/.config/mcp/mcp.json` | MCP server 配置 |
+| `.pi/settings.json` | 项目级设置（可跟团队共享） |
 
-## 十二、装完之后怎么用
-
-1. **先配模型**：跑 `pi config`，加你自己的 provider 和模型。本仓库不涉及这部分。
-2. **重启 Pi**：让新装的插件和 MCP server 生效。
-3. **试试 skill**：在 Pi 里直接描述任务，模型会自动匹配合适的 skill。
-4. **双层记忆**：L2 自动生效；L3 需要时用 `ctx_index` 索引文档。
+自定义暗色主题 `vivid-night` 存放于 `themes/vivid-night.json`，安装后自动加载。
 
 ---
 
-## License
+## 📁 Structure
 
-MIT
+```
+pi-config/
+├── install.sh      # 一键安装：装 21 个插件 + 合并 MCP 配置
+├── config.json     # 机器可读完整配置（plugins/skills/MCP/UI/memory）
+├── mcp.json        # MCP server 定义（context7）
+└── README.md       # 本文件
+```
+
+---
+
+## ⚠️ Limitations
+
+| 限制 | Workaround |
+| --- | --- |
+| 不含模型 provider / API key | `pi config` 自行配置 |
+| Windows 适配插件在 mac/Linux 上多余 | 不想要就删掉 settings.json 里对应行 |
+| 插件版本随上游更新，行为可能变化 | `pi install npm:<pkg>@<version>` pin 版本 |
+| 非 0.84.2 的 Pi 版本未测试 | 遇问题先对齐 Pi 版本再排查 |
+
+---
+
+## 🙏 Acknowledgements
+
+本仓库是插件的组装与调优，核心能力全部来自以上开源作者，感谢他们的工作。想自己动手扩展 Pi？三档改造路径：写 **Skill**（零代码沉淀流程知识）→ 写 **MCP Server**（接入外部服务）→ 写 **Extension**（订阅事件、注册工具的最强改造）。
+
+## 📜 License
+
+[MIT](LICENSE)
