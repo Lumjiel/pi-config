@@ -53,7 +53,7 @@
   },
   "globalSkills": {
 "fromPackages": {
-      "count": 16
+      "count": 17,
       "pi-subagents": ["pi-subagents"],
       "pi-web-access": ["librarian"],
       "pi-lens": [
