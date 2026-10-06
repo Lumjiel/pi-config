@@ -1,17 +1,17 @@
 # pi-config
 
-开箱即用的 [Pi](https://pi.dev) 终端编码代理配置 —— **21 个插件 · 16 个 Skill · 1 个 MCP Server · 双层记忆系统**，一条命令完整复刻。
+开箱即用的 [Pi](https://pi.dev) 终端编码代理配置 —— **20 个插件 · 17 个 Skill · 1 个 MCP Server · 双层记忆系统**，一条命令完整复刻。
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-success)](LICENSE)
 [![Pi](https://img.shields.io/badge/Pi-0.84.2-8A2BE2)](https://pi.dev)
-[![Plugins](https://img.shields.io/badge/plugins-21-blue)](#-插件目录21-个)
-[![Skills](https://img.shields.io/badge/skills-16-green)](#-skill-清单16-个)
+[![Plugins](https://img.shields.io/badge/plugins-20-blue)](#-插件目录20-个)
+[![Skills](https://img.shields.io/badge/skills-16-green)](#-skill-清单17-个)
 [![MCP](https://img.shields.io/badge/MCP-1-orange)](#-mcp-integration)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](#-compatibility)
 
 仓库里的每一样东西都经过实际使用筛选，目标是把 Pi 打造成一个**能多代理协作、能省 token、能跑浏览器、有长期记忆**的全能终端编码代理。
 
-**导航**：[Compatibility](#-compatibility) · [Quick Start](#-quick-start) · [插件目录](#-插件目录21-个) · [Skill 清单](#-skill-清单16-个) · [MCP](#-mcp-integration) · [记忆系统](#-双层记忆系统) · [配置文件](#️-配置文件速查) · [Limitations](#️-limitations)
+**导航**：[Compatibility](#-compatibility) · [Quick Start](#-quick-start) · [插件目录](#-插件目录20-个) · [Skill 清单](#-skill-清单17-个) · [MCP](#-mcp-integration) · [记忆系统](#-双层记忆系统) · [配置文件](#️-配置文件速查) · [Limitations](#️-limitations)
 
 ---
 
@@ -36,10 +36,10 @@ bash install.sh
 ```
 
 ```
-📦 安装 21 个 Pi 插件包...
+📦 安装 20 个 Pi 插件包...
   → pi install npm:pi-subagents        ✓
   → pi install npm:context-mode        ✓
-  ...共 21 个
+  ...共 20 个
 🔌 配置 MCP servers...
   ✓ 已合并 MCP server: context7       （已有配置不覆盖）
 ✅ 安装完成！
@@ -80,7 +80,7 @@ npm install -g @earendil-works/pi-coding-agent
 git clone https://github.com/Lumjiel/pi-config.git
 cd pi-config
 
-# 2. 一键安装：21 个插件 + 合并 MCP 配置
+# 2. 一键安装：20 个插件 + 合并 MCP 配置
 bash install.sh
 
 # 3. 配置你自己的模型 provider 和 key（脚本不做这步）
@@ -91,7 +91,7 @@ pi config
 
 ---
 
-## 🧩 插件目录（21 个）
+## 🧩 插件目录（20 个）
 
 ### 🤖 代理编排与工作流
 
@@ -141,7 +141,7 @@ pi config
 
 ---
 
-## 🦞 Skill 清单（16 个）
+## 🦞 Skill 清单（17 个）
 
 全部来自已安装的 npm 包，装好插件自动获得：
 
@@ -214,7 +214,7 @@ L2 共 **30 个 .md 文件**，分四类 target：`memory`（全局）、`user`�
 
 ```
 pi-config/
-├── install.sh      # 一键安装：装 21 个插件 + 合并 MCP 配置
+├── install.sh      # 一键安装：装 20 个插件 + 合并 MCP 配置
 ├── config.json     # 机器可读完整配置（plugins/skills/MCP/UI/memory）
 ├── mcp.json        # MCP server 定义（context7）
 └── README.md       # 本文件
